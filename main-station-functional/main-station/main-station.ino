@@ -6,28 +6,28 @@
 #include <WiFiUdp.h>
 
 
-// Configurare MQTT
+// MQTT Configuration
 const char* mqtt_server = "test.mosquitto.org";
 const int mqtt_port = 1883;
 const char* mqtt_topic = "DDR-AMIN/weather/station";
 
-// Configurare WiFi
+// WiFi Configuration
 const char* ssid = "Telia-EC2DEF";
 const char* password = "3DBF9327B5";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-LGFX lcd;  // Obiect pentru display
+LGFX lcd;  // Object for display
 
-// Configurare NTP
+// NTP Configuration
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org", 7200, 60000); // UTC+1 pentru ora standard (folosește 7200 pentru ora de vară)
+NTPClient timeClient(ntpUDP, "pool.ntp.org", 7200, 60000); // UTC+1 for standard time (use 7200 for daylight saving time)
 
-// Dimensiuni și margini pentru săgeți
-const int arrowSize = 20;  // Dimensiunea săgeților
-const int arrowMargin = 10;  // Marginea săgeților față de marginea ecranului
+// Dimensions and margins for arrows
+const int arrowSize = 20;  // Arrow size
+const int arrowMargin = 10;  // Arrow margin from the edge of the screen
 
-// Datele senzorilor pentru diferite stații
+// Sensor data for different stations
 struct SensorData {
     String station_id;
     float temperature;
@@ -42,10 +42,10 @@ struct SensorData {
     String errorType;
     String errorMessage;
     bool isConnected;
-    unsigned long lastUpdate;  // Adăugat pentru a verifica ultima actualizare
+    unsigned long lastUpdate;  // Added to check the last update
 } stations[3];
 
-int currentStation = 0;  // Stația curentă afișată
+int currentStation = 0;  // Currently displayed station
 
 void setup() {
     Serial.begin(115200);
@@ -193,9 +193,9 @@ void loop() {
     }
     client.loop();
 
-    timeClient.update();  // Actualizează timpul
+    timeClient.update();  // Update time
 
-    // Debugging: Verifică ora actuală
+    // Debugging: Check the current time
     Serial.print("Hour: ");
     Serial.println(timeClient.getHours());
     Serial.print("Minute: ");
@@ -246,8 +246,8 @@ void displayData(int stationIndex) {
     lcd.setCursor(10, 110);
     lcd.printf("Rain: %s", stations[stationIndex].rainAvailable ? stations[stationIndex].rain : "N/A");
 
-    // Afișare dată și oră
-    lcd.setTextSize(1);  // Dimensiunea mai mică pentru data și ora
+    // Display date and time
+    lcd.setTextSize(1);  // Smaller size for date and time
     lcd.setCursor(10, lcd.height() - 10);
     lcd.setTextColor(TFT_CYAN);
     lcd.printf("Time: %02d:%02d", timeClient.getHours(), timeClient.getMinutes());
@@ -277,10 +277,10 @@ void drawArrows() {
     lcd.setTextColor(TFT_WHITE, TFT_BLACK);
     lcd.setTextSize(3);
     
-    // Săgeată stânga
+    // Left arrow
     lcd.fillTriangle(arrowMargin, lcd.height() - arrowSize, arrowMargin + arrowSize, lcd.height() - arrowSize / 2, arrowMargin, lcd.height() - arrowSize / 2);
     
-    // Săgeată dreapta
+    // Right arrow
     lcd.fillTriangle(lcd.width() - arrowMargin - arrowSize, lcd.height() - arrowSize, lcd.width() - arrowMargin, lcd.height() - arrowSize / 2, lcd.width() - arrowMargin - arrowSize, lcd.height() - arrowSize / 2);
 }
 
